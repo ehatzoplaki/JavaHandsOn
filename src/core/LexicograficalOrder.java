@@ -27,16 +27,17 @@ public class LexicograficalOrder {
         
         //Compare the file Strings
         lexicograficalOrder.compareTwoFileStrings(outputFile);
-	}
+	}	
 
-	
-
+	/**
+	 * Reads the strings of every line in a file
+	 * @param inputFile the file path to read from
+	 * @return the list of string in the file
+	 */
 	private List<String> readFileStrings(String inputFile) {
-		//System.out.println("inputFile: " + inputFile);
 		List<String> listToReturn = new ArrayList<String>(); 
 		try(BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
 		    for(String line; (line = br.readLine()) != null; ) {
-		    	//System.out.println("line: " + line);
 		    	listToReturn.add(line);
 		    }
 		}
@@ -46,7 +47,14 @@ public class LexicograficalOrder {
 		return listToReturn;
 	}
 	
-	private void compareTwoFileStrings(String outputFileString) {
+	/**
+	 * Compare the two files strings and flush 
+	 * the common words in another file
+	 * @param outputFileString the file path to write the
+	 * compare results
+	 * @throws IOException
+	 */
+	private void compareTwoFileStrings(String outputFileString) throws IOException{
 		//Sort the file Strings
         Collections.sort(firstFileStrings);
         Collections.sort(secondFileStrings);
@@ -60,37 +68,27 @@ public class LexicograficalOrder {
         	outputFile.delete();
         	//Create the new file
 			outputFile.createNewFile();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException ioException) {
+			System.out.println("IO Exception in file creation: " + ioException.getMessage());
 		}
         
         while (firstFileIndex < firstFileStrings.size() - 1
-        		|| secondFileIndex < secondFileStrings.size() - 1) {
-        	//System.out.println("firstFileIndex: " + firstFileIndex);
-        	//System.out.println("firstFileStrings.get(firstFileIndex): " + firstFileStrings.get(firstFileIndex));
-        	//System.out.println("secondFileIndex: " + secondFileIndex);
-        	//System.out.println("secondFileStrings.get(secondFileIndex)): " + secondFileStrings.get(secondFileIndex));
-        	
+        		|| secondFileIndex < secondFileStrings.size() - 1) {        	
         	int compareResult = firstFileStrings.get(firstFileIndex)
         		.compareTo(secondFileStrings.get(secondFileIndex));
-        	//System.out.println("compareResult: " + compareResult);
         	
         	if (compareResult < 0) { // first string lexicografically less than second string
         		if (firstFileIndex < firstFileStrings.size() - 1)
         			firstFileIndex ++;
-        		//System.out.println("compareResult < 0 FIRST: " + firstFileIndex);
         	}
         	else if (compareResult > 0) { // first string lexicografically greater than second string
         		if (secondFileIndex < secondFileStrings.size() - 1)
         			secondFileIndex ++;
-        		//System.out.println("compareResult > 0 SECOND: " + secondFileIndex);
         	}
-        	else { // two Strings equals
+        	else { // two Strings are equal
         		String stringToSave = firstFileStrings.get(firstFileIndex);
         		if (previousSavedString.compareTo(stringToSave) != 0) {
         			previousSavedString = stringToSave;
-        			//System.out.println("previousSavedString: " + previousSavedString);
         			writeStringToOutputFile(outputFile, stringToSave);
         		}
         		
@@ -98,19 +96,17 @@ public class LexicograficalOrder {
         			firstFileIndex ++;
         		if (secondFileIndex < secondFileStrings.size() - 1)
         			secondFileIndex ++;
-        		//System.out.println("compareResult = 0 FIRST: " + firstFileIndex + 
-        			//	", SECOND: " + secondFileIndex);
         	}
         }
 	}
 
+	/**
+	 * Writes a string to a file and changes line
+	 * @param outputFile file to write in
+	 * @param stringToSave string to write in the file
+	 */
 	private void writeStringToOutputFile(File outputFile, String stringToSave) {	
 		try {
-			/*// if file doesn't exists, then create it
-			if (!outputFile.exists()) {
-				outputFile.createNewFile();
-			}*/
-
 			FileWriter fw = new FileWriter(outputFile.getAbsoluteFile(), true);
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(stringToSave);
@@ -118,7 +114,6 @@ public class LexicograficalOrder {
 			bw.close();
 		} catch (IOException ioException) {
 			System.out.println("IO Exception in writeStringToOutputFile: " + ioException.getMessage());
-		}
-		
+		}	
 	}
 }
